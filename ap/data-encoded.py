@@ -5,8 +5,6 @@ import cv2
 import face_recognition
 
 
-
-
 class FaceEncoded():
     """
     Face data encode 
