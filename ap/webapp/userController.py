@@ -1,9 +1,7 @@
-from flask import Flask, Blueprint, request, jsonify, render_template, url_for, flash, redirect, session
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-import os, requests, json
+import json
+import requests
+from flask import Blueprint, request, render_template, url_for, flash, redirect, session
 from userForm import RegistrationForm, LoginForm
-from flask_login import login_user, current_user, logout_user, login_required
 
 site = Blueprint("site", __name__)
 
