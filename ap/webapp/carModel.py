@@ -8,6 +8,7 @@ marsh = flask_marshmallow.Marshmallow()
 class Car(db.Model):
     __tablename__ = "Car"
     CarId = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    PlateNumber = db.Column(db.String(256))
     Make = db.Column(db.Text)
     BodyType = db.Column(db.Text)
     Color = db.Column(db.Text)
@@ -15,8 +16,9 @@ class Car(db.Model):
     Location = db.Column(db.Text)
     CostPerHour = db.Column(db.Integer)
 
-    def __init__(self, make, bodyType, color, seats, location, costPerHour, carId=None):
+    def __init__(self, plateNumber, make, bodyType, color, seats, location, costPerHour, carId=None):
         self.carId = carId
+        self.plateNumber = plateNumber
         self.make = make
         self.bodyType = bodyType
         self.color = color
@@ -32,4 +34,4 @@ class CarSchema(marsh.Schema):
 
     class Meta:
         # Fields to expose.
-        fields = ("CarId", "Make", "BodyType", "Color", "Seats", "Location", "CostPerHour")
+        fields = ("CarId", "PlateNumber", "Make", "BodyType", "Color", "Seats", "Location", "CostPerHour")

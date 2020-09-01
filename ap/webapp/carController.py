@@ -27,14 +27,21 @@ class RestApi:
     # Create New Car
     @api.route("/car", methods=["POST"])
     def addBook():
+        plateNumber = request.json["PlateNumber"]
         make = request.json["Make"]
         bodyType = request.json["BodyType"]
         color = request.json["Color"]
         seats = request.json["Seats"]
         location = request.json["Location"]
         costPerHour = request.json["CostPerHour"]
+        # Check if Car existed base on their PlateNumber
+        if len(Car.query.filter(Car.PlateNumber == PlateNumber).all()) >= 1:
+            temp = {
+                'result': 'have exist'
+            }
+            return jsonify(temp)
 
-        newCar = Car(make=make, bodyType=bodyType, color=color, seats=seats, location=location, costPerHour=costPerHour)
+        newCar = Car(PlateNumber=plateNumber, Make=make, BodyType=bodyType, Color=color, Seats=seats, Location=location, CostPerHour=costPerHour)
         db.session.add(newCar)
         db.session.commit()
         return carSchema.jsonify(newCar)
@@ -44,6 +51,7 @@ class RestApi:
     @api.route("/car/<id>", methods=["PUT"])
     def bookUpdate(id):
         car = Car.query.get(id)
+        plateNumber = request.json["PlateNumber"]
         make = request.json["Make"]
         bodyType = request.json["BodyType"]
         color = request.json["Color"]
@@ -52,12 +60,13 @@ class RestApi:
         costPerHour = request.json["CostPerHour"]
 
         # Update Car
-        car.make = make
-        car.bodyType = bodyType
-        car.color = color
-        car.seats = seats
-        car.location = location
-        car.costPerHour = costPerHour
+        car.PlateNumber = plateNumber
+        car.Make = make
+        car.BodyType = bodyType
+        car.Color = color
+        car.Seats = seats
+        car.Location = location
+        car.CostPerHour = costPerHour
         db.session.commit()
         return carSchema.jsonify(car)
 

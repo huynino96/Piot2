@@ -10,6 +10,7 @@ class Site:
     """
     Site class
     """
+    PlateNumber = ''
     Make = ''
     BodyType = ''
     Color = ''
@@ -21,6 +22,7 @@ class Site:
 
     @staticmethod
     def getCarInfo(request):
+        global PlateNumber
         global Make
         global BodyType
         global Color
@@ -29,6 +31,7 @@ class Site:
         global CostPerHour
         global data
         global headers
+        PlateNumber = request.form["PlateNumber"]
         Make = request.form["Make"]
         BodyType = request.form["BodyType"]
         Color = request.form["Color"]
@@ -36,6 +39,7 @@ class Site:
         Location = request.form["Location"]
         CostPerHour = request.form["CostPerHour"]
         data = {
+            "PlateNumber": PlateNumber,
             "Make": Make,
             "BodyType": BodyType,
             "Color": Color,
@@ -127,7 +131,7 @@ class Site:
             response = requests.post("http://127.0.0.1:5000/car", data=json.dumps(data), headers=headers)
             res = json.loads(response.text)
             if len(res) == 1:
-                flash('Car has been existed!', 'warning')
+                flash('Car with(' + PlateNumber + ') has been existed!', 'warning')
                 return render_template("add.html")
             else:
                 flash('Successfully Added new Car', 'success')
