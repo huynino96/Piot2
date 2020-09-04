@@ -12,10 +12,10 @@ It will use these classes to simulate an interconnecting system for car manageme
 '''
 
 
-class carDatabase:
+class CarDatabase:
     @staticmethod
     def from_config(config):
-        return carDatabase(config)
+        return CarDatabase(config)
 
     def __init__(self, config):
         self.__car_db = CarDB(config)
@@ -101,29 +101,29 @@ class carDatabase:
         rentedDate = rented["rentedDate"]
 
         # Init calendar if not initiated
-        if not self.__calendar.if_initiated():
+        if not self.__calendar.ifInitiated():
             self.__calendar.init()
 
         # Add event to Google Calendar
-        event = self.__calendar.add_event("car return", "Return {}".format(carInstance["title"]),
+        event = self.__calendar.addEvent("car return", "Return {}".format(carInstance["title"]),
                                           RentedCarDB.getReturnDate(rentedDate))
 
         # Save event string to table for latter removal
-        self.__event_db.save_event(rented_id=rentedId, event_string=event["id"])
+        self.__event_db.saveEvent(rentedId=rentedId, eventString=event["id"])
 
     def returnCar(self, userId, carId):
         # Return the car using rented car class
         rentedId = self.__rented_db.returnCar(userId, carId)
 
         # Init calendar if not initiated
-        if not self.__calendar.if_initiated():
+        if not self.__calendar.ifInitiated():
             self.__calendar.init()
 
         # Get event string from db
-        eventStringId = self.__event_db.get_event_string(rentedId)
+        eventStringId = self.__event_db.getEventString(rentedId)
 
         # Remove from calendar using this unique event string id
-        self.__calendar.remove_event(eventStringId)
+        self.__calendar.removeEvent(eventStringId)
         return rentedId
 
     # Method to find a car using plate number and return it
@@ -155,5 +155,5 @@ class carDatabase:
 
 
 if __name__ == "__main__":
-    with carDatabase.from_config(config) as MP:
+    with CarDatabase.from_config(config) as MP:
         print(MP.searchByPlateNumber('66S-6666'))

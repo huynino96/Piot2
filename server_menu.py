@@ -1,4 +1,4 @@
-from LMS.menu import Menu as LMSMenu
+from MP.menu import Menu as MPMenu
 from config import config
 from Connection.server import Server
 import os
@@ -7,19 +7,19 @@ import os
 class Menu:
     def __init__(self):
         self.__receiver = Server(config["udp_server_port"], config["udp_client_port"])
-        self.__lms_menu = None
+        self.__MP_menu = None
 
     def on_receive(self, data):
         if data is not None:
             username = data.decode('utf-8')
-            print("Connection opened. Please wait for the LMS menu to start...")
+            print("Connection opened. Please wait for the MP menu to start...")
             self.display_menu(username)
 
     def display_menu(self, username):
         os.system('clear')
-        self.__lms_menu = LMSMenu(username)
-        self.__lms_menu.init()
-        self.__lms_menu.display_menu()
+        self.__MP_menu = MPMenu(username)
+        self.__MP_menu.init()
+        self.__MP_menu.display_menu()
         self.__receiver.send_message("logout")
 
     def start_listening(self):

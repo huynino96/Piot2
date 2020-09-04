@@ -151,7 +151,7 @@ class CarDB:
                 "id": car[0],
                 "plateNumber": car[1],
                 "make": car[2],
-                "bpdyType": car[3],
+                "bodyType": car[3],
                 "color": car[4],
                 "seats": car[5],
                 "location": car[6],
