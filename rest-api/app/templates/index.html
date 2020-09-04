@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/main.css">
+    <title>Book Manager System</title>
+</head>
+<body>
+    <!--Body-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            LMS
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+      </nav>
+    <div>
+        <img class="my-3 rounded mx-auto d-block" src="https://www.raspberrypi.org/app/uploads/2017/06/Powered-by-Raspberry-Pi-Logo_Outline-Colour-Screen-500x153.png" alt="">
+    </div>
+    <div class="container">
+        <div class="alert alert-primary" style="display: none;">
+                <span></span>
+                <button type="button" class="close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+        </div>
+        <div class="login-section my-5">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Log in to LMS</h5>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="username">Admin name</label>
+                            <input type="text" class="form-control" id="username" placeholder="Enter username" name="username">
+                            <small id="emailHelp" class="form-text text-muted">We'll never share your account with anyone else.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Password" name="password">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-section" style="display: none;">
+            <div class="card book-list">
+                <div class="card-header">
+                    Book List
+                </div>
+
+                <div class="add-book-section card card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="book_title">Book title</label>
+                                <input type="text" class="form-control" id="book_title" placeholder="Enter book title" name="book_title">
+                                <small id="titleHelp" class="form-text text-muted">Please enter an accurate name.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="book_author">Author</label>
+                            <input type="text" class="form-control" id="book_author" placeholder="Enter book author" name="book_author">
+                        </div>
+                        <div class="form-group">
+                                <label for="published_date">Published date</label>
+                                <input type="date" class="form-control" id="published_date" placeholder="Enter book published date" name="published_date">
+                        </div>
+			<div class="form-group">
+                                <label for="book_isbn">Book ISBN</label>
+                                <input type="text" class="form-control" id="book_isbn" placeholder="Enter book isbn" name="book_isbn">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Add book</button>
+                    </form>
+                </div>
+
+                <!--Book list-->
+                <ul class="list-group-item">
+                </ul>
+                <ul class="pagination">
+                    <li class="page-item" id="previous"><a class="page-link" href="#" >Previous</a></li>
+                    <li class="page-item" id="next"><a class="page-link" href="#" >Next</a></li>
+                </ul>
+
+                <!--Graph-->
+                <div class="card">
+                    <div class="card-header">
+                        Data visualization
+                    </div>
+
+                    <div class="card-body">
+                        <h3>Daily Borrow/Return plot</h3>
+                        <div id="graphDailyDiv" class="mb-3"></div>
+                        <h3>Monthly Borrow/Return histogram</h3>
+                        <div id="graphMonthlyDiv"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Bootstrap Scripts-->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!--D3JS-->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!--My Scripts-->
+    <script src="{{ url_for("static", filename="main.js") }}"></script>
+    <script src="{{ url_for("static", filename="graph.js") }}"></script>
+</body>
+</html>
