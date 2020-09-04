@@ -41,37 +41,37 @@ class CarSchema(ModelSchema):
         model = Car
 
 
-class BorrowedCar(db.Model):
-    borrowedId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+class RentedCar(db.Model):
+    rentedId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     carId = db.Column(db.Integer, db.ForeignKey('Car.carId'), nullable=False)
     userId = db.Column(db.Integer, db.ForeignKey('User.userId'), nullable=False)
-    status = db.Column(db.Enum('borrowed', 'returned'), nullable=True)
-    borrowedDate = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.Enum('rented', 'returned'), nullable=True)
+    rentedDate = db.Column(db.DateTime, nullable=False)
     returnedDate = db.Column(db.DateTime, nullable=True)
 
 
-# This function will generate data for creating graph about borrowed and returned books
+# This function will generate data for creating graph about rented and returned books
 def getDailyAnalytics():
-    # Group the number of borrowed books per day
-    totalBorrowed = db.session.query(sa.func.date_format(BorrowedCar.borrowedDate, '%d-%m-%Y'),
-                                      sa.func.count(BorrowedCar.borrowedDate)) \
-        .group_by(sa.func.date_format(BorrowedCar.borrowedDate, '%d-%m-%Y')).all()
+    # Group the number of rented books per day
+    totalrented = db.session.query(sa.func.date_format(RentedCar.rentedDate, '%d-%m-%Y'),
+                                      sa.func.count(RentedCar.rentedDate)) \
+        .group_by(sa.func.date_format(RentedCar.rentedDate, '%d-%m-%Y')).all()
 
     # Group the number of returned books per day
-    totalReturned = db.session.query(sa.func.date_format(BorrowedCar.returnedDate, '%d-%m-%Y'),
-                                      sa.func.count(BorrowedCar.borrowedDate),
-                                      sa.func.count(BorrowedCar.returnedDate)) \
-        .filter(BorrowedCar.returnedDate != None) \
-        .group_by(sa.func.date_format(BorrowedCar.returnedDate, '%d-%m-%Y')).all()
+    totalReturned = db.session.query(sa.func.date_format(RentedCar.returnedDate, '%d-%m-%Y'),
+                                      sa.func.count(RentedCar.rentedDate),
+                                      sa.func.count(RentedCar.returnedDate)) \
+        .filter(RentedCar.returnedDate != None) \
+        .group_by(sa.func.date_format(RentedCar.returnedDate, '%d-%m-%Y')).all()
 
     # Convert to dictionary instead of tuples
-    totalBorrowed = [{"date": item[0], "count": item[1]} for item in totalBorrowed]
+    totalrented = [{"date": item[0], "count": item[1]} for item in totalrented]
     totalReturned = [{"date": item[0], "count": item[1]} for item in totalReturned]
     totalData = dict()
 
     # Join two dataset to create an array containing
     # the number of borrow and returned book in a day
-    for item in totalBorrowed:
+    for item in totalrented:
         totalData[item["date"]] = {"borrowCount": item["count"], "returnCount": 0}
 
     for item in totalReturned:
@@ -91,22 +91,22 @@ def getDailyAnalytics():
 # The same as above, but for monthly data
 def getMonthlyAnalytics():
     # Get total returns and borrows per day
-    totalBorrowed = db.session.query(sa.func.date_format(BorrowedCar.borrowedDate, '%m-%Y'),
-                                      sa.func.count(BorrowedCar.borrowedDate)) \
-        .group_by(sa.func.date_format(BorrowedCar.borrowedDate, '%m-%Y')).all()
-    totalReturned = db.session.query(sa.func.date_format(BorrowedCar.returnedDate, '%m-%Y'),
-                                      sa.func.count(BorrowedCar.borrowedDate),
-                                      sa.func.count(BorrowedCar.returnedDate)) \
-        .filter(BorrowedCar.returnedDate != None) \
-        .group_by(sa.func.date_format(BorrowedCar.returnedDate, '%m-%Y')).all()
+    totalrented = db.session.query(sa.func.date_format(RentedCar.rentedDate, '%m-%Y'),
+                                      sa.func.count(RentedCar.rentedDate)) \
+        .group_by(sa.func.date_format(RentedCar.rentedDate, '%m-%Y')).all()
+    totalReturned = db.session.query(sa.func.date_format(RentedCar.returnedDate, '%m-%Y'),
+                                      sa.func.count(RentedCar.rentedDate),
+                                      sa.func.count(RentedCar.returnedDate)) \
+        .filter(RentedCar.returnedDate != None) \
+        .group_by(sa.func.date_format(RentedCar.returnedDate, '%m-%Y')).all()
 
     # Send it to front end as json
-    totalBorrowed = [{"month": item[0], "count": item[1]} for item in totalBorrowed]
+    totalrented = [{"month": item[0], "count": item[1]} for item in totalrented]
     totalReturned = [{"month": item[0], "count": item[1]} for item in totalReturned]
     totalData = dict()
 
     # Join two dataset
-    for item in totalBorrowed:
+    for item in totalrented:
         totalData[item["month"]] = {"borrowCount": item["count"], "returnCount": 0}
 
     for item in totalReturned:
