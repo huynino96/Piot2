@@ -1,5 +1,5 @@
 from Authentication import Authentication
-from FaceRecognition.face_registerer import FaceRegisterer
+from FaceRecognition.face_register import FaceRegisterer
 from FaceRecognition.face_detector import FaceDetector
 from Connection.client import Client
 from config import config
