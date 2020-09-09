@@ -24,7 +24,7 @@ marshmallow-sqlalchemy
 mysql-connector==2.2.9
 numpy==1.16.4
 oauthlib==3.1.0
-opencv-python
+opencv-python==4.1.1.26
 Pillow
 pyasn1==0.4.5
 pyasn1-modules==0.2.5

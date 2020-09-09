@@ -1,4 +1,5 @@
-import cv2
+from cv2 import cv2
+import numpy
 import face_recognition
 import os
 from config import config
