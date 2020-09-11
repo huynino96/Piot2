@@ -1,4 +1,4 @@
-from cv2 import cv2
+import cv2
 import numpy
 import face_recognition
 from FaceRecognition.face_database import FaceDatabase
