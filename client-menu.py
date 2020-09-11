@@ -44,8 +44,6 @@ class Menu:
                     print("This user already exists")
                 except Authentication.PasswordNotValid as e:
                     print("Password not valid: \n{}".format(e))
-                except Exception as e:
-                    print("Error encountered: {}".format(e))
             elif choice == "2":
                 try:
                     name = input("Enter your name: ")

@@ -11,7 +11,7 @@ class Hasher:
         # Password must be in bytes before hashing
         pwd = str.encode(pwd)
         salt = bcrypt.gensalt()
-        return bcrypt.hashpw(pwd, salt).decode()    # bcrypt.hashpw returns bytes => convert to string before returning
+        return bcrypt.hashpw(pwd, salt)    # bcrypt.hashpw returns bytes => convert to string before returning
 
     @staticmethod
     def if_matched(pwd, hashed):
