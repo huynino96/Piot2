@@ -46,7 +46,7 @@ def auth():
 def cars(page=1):
     allCars = Car.query.paginate(page, per_page=5)
     return jsonify({
-        "cars": carsSchema.dump(allCars.items),
+        "cars": carsSchema.dump(allCars.items).data,
         "has_next": allCars.has_next,
         "has_prev": allCars.has_prev
     })
@@ -86,7 +86,7 @@ def add_cars():
         db.session.commit()
     except Exception as e:
         return jsonify({"error": str(e)})
-    return jsonify({"success": True, "id": car.carId})
+    return jsonify({"success": True, "id": Car.carId})
 
 
 @app.route("/cars/delete/<int:id>", methods=["DELETE"])

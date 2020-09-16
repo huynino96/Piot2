@@ -4,8 +4,8 @@ import os
 config = {
         "local_database": os.path.join(os.path.abspath(os.path.dirname(__file__)), "a2.db"),
         "host": "127.0.0.1",
-        "user": "root",
-        "password": "weareone",
+        "user": "car",
+        "password": "123456",
         "database": "car",
         "client_secrets": os.path.join(os.path.abspath(os.path.dirname(__file__)), "client_secrets.json"),
         "udp_client_port": 5555,

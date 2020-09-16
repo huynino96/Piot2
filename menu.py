@@ -18,7 +18,6 @@ class Menu:
     def __init__(self, name):
         self.__username = name
         self.__car_db = CarDatabase.from_config(config)
-        self.__speech_recognizer = SpeechRecognition(config["speech_credentials"], time_out=2)
         self.__user = None
 
     @staticmethod
@@ -36,55 +35,38 @@ class Menu:
         self.__user = self.__car_db.getUser(self.__username)
 
     def display_menu(self):
-        option0 = "Search cars (using speech recognition)"
         option1 = "Search car catalogue."
         option2 = "Borrow a car/cars"
         option3 = "Return a car/cars"
         option4 = "Logout"
         while True:
             Menu.separate()
-            print("0: " + option0)
             print("1: " + option1)
             print("2: " + option2)
             print("3: " + option3)
             print("4: " + option4)
             userInput = input("Enter you choice: ")
 
-            if userInput == "0":
-                try:
-                    make = self.__speech_recognizer.recognize("Say the car's brand...")
-                    print("You said: {}".format(make))
-
-                    # Search for cars
-                    results = self.__car_db.searchByBrand(make)
-                    if len(results) == 0:
-                        print("No result for this title")
-                    else:
-                        CarDatabase.displayInfo(results)
-                except SpeechRecognition.CanNotRecognizeError:
-                    print("Can not translate to text. Please try again")
-                except SpeechRecognition.ApiConnectionError:
-                    print("Can not connect to the API. Please try again")
-            elif userInput == "1":
+            if userInput == "1":
                 print("You have selected " + option1)
                 while True:
-                    carSearchOption = input("What would you like to search by?\n1.PlateNumber\n2.Seats\n3.BodyType\n"
-                                               "4.CostPerHour\nYour choice: ")
+                    carSearchOption = input("What would you like to search by?\n1.Brand\n2.Seats\n3.Body Type\n"
+                                               "4.Cost Per Hour\nYour choice: ")
                     if carSearchOption == "1":
-                        plateNumber = input("Enter the car id:")
+                        brand = input("Enter brand:")
 
-                        result = self.__car_db.searchByPlateNumber(plateNumber)
+                        result = self.__car_db.searchByBrand(brand)
                         if result:
                             CarDatabase.displayInfo([result])
                         else:
                             print("The car with id {} does not exist".format(result))
                     elif carSearchOption == "2":
-                        seats = input("Enter the car name:")
+                        seats = input("Enter the seats:")
 
                         results = self.__car_db.searchByNoSeats(seats)
                         CarDatabase.displayInfo(results)
                     elif carSearchOption == "3":
-                        bodyType = input("Enter the car's author:")
+                        bodyType = input("Enter body:")
 
                         results = self.__car_db.searchByBodyType(bodyType)
                         CarDatabase.displayInfo(results)

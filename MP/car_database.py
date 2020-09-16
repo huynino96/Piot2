@@ -69,16 +69,18 @@ class CarDatabase:
     @staticmethod
     def displayInfo(cars):
         print("*" * 127)
-        print("*{:<25}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}*".format("CarId", "PlateNumber", "Make", "BodyType", "Color", "Seats", "Location", "CostPerHour"))
+        print("*{:<25}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}*".format("Car Id", "plateNumber", "make", "bodyType", "color", "seats", "location", "costPerHour"))
         for car in cars:
-            print("*{:<25}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}{:<25s}*".format(car["carId"],
+            if (isinstance(car, list)):
+                car = car[0]
+            print("*{:<25}{:<25s}{:<25s}{:<25s}{:<25s}{:<25}{:<25s}{:<25}*".format(car["id"],
                                                                 car["plateNumber"],
                                                                 car["make"],
                                                                 car["bodyType"],
                                                                 car["color"],
                                                                 car["seats"],
                                                                 car["location"],
-                                                                car['costPerHour']))
+                                                                car["costPerHour"]))
         print("*" * 127)
 
         if len(cars) == 0:

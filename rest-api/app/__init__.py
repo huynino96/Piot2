@@ -6,7 +6,7 @@ from flask_restful import Api
 from flask_cors import CORS
 
 
-app = Flask(__name__, static_url_path='/')  # Specify the static path
+app = Flask(__name__, static_folder='static', static_url_path='/')  # Specify the static path
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 CORS(app)   # Use flask_cors to allow cross origin request

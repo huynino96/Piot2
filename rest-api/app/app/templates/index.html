@@ -16,7 +16,6 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
         </button>
-        <button id="logout" class="btn btn-outline-success my-2 my-sm-0 ml-auto" type="button" onclick="handleClickLogOut()">Log Out</button>
       </nav>
     <div>
         <img class="my-3 rounded mx-auto d-block" src="https://www.raspberrypi.org/app/uploads/2017/06/Powered-by-Raspberry-Pi-Logo_Outline-Colour-Screen-500x153.png" alt="">
@@ -134,22 +133,6 @@
         let mainSection = document.querySelector(".main-section");
         let alertSection = document.querySelector(".alert");
 
-        window.onload = function() {
-            if (window.localStorage.getItem('authentication') === 'true') {
-                document.getElementById('logout').style.display = 'block';
-                showAdminPanel();
-                getCars(); //Get cars and display
-                getAnalytics();
-            } else {
-                document.getElementById('logout').style.display = 'none';
-            }
-        }
-
-        function handleClickLogOut() {
-            window.localStorage.removeItem('authentication');
-            location.href = '/admin'
-        }
-
         //Login
         loginForm.onsubmit = function(event) {
             //Prevent page loading
@@ -180,8 +163,6 @@
                 username = null;
                 password = null
             } else {
-                window.localStorage.setItem('authentication', 'true');
-                document.getElementById('logout').style.display = 'block';
                 //Hide login box and show login panel when logged in
                 showAdminPanel();
                 getCars(); //Get cars and display
@@ -262,14 +243,14 @@
                 //Create a li element and add
                 let li = document.createElement('li');
                 li.className = "list-group-item";
-                li.textContent = `${car.plateNumber} - ${car.make} - ${car.bodyType}- ${car.color} - ${car.seats} - ${car.location} - ${car.costPerHour}`;
+                li.textContent = `${car.car_title} - ${car.car_author}`;
 
                 //Create a delete button
                 let deleteButton = document.createElement("button");
                 deleteButton.textContent = "Delete";
                 deleteButton.className = "btn btn-danger float-right mb-2";
                 deleteButton.onclick = function() {
-                    deleteCar(car.carId )
+                    deleteCar(car.car_id)
                 };
 
                 //Add

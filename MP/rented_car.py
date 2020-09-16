@@ -38,7 +38,7 @@ class RentedCarDB:
     # Check if a car with a specific id is rented
     def ifCarIsrented(self, carId):
         cursor = self.__db.cursor()
-        cursor.execute("SELECT status FROM rentedCar WHERE carId = %s ORDER BY rentedDate DESC",
+        cursor.execute("SELECT status FROM rented_car WHERE carId = %s ORDER BY rentedDate DESC",
                        (carId,))
         allRented = cursor.fetchall()    # Using fetchall to make sure that cursor will not raise an error
         rented = allRented[0] if allRented and len(allRented) > 0 else None
@@ -49,7 +49,7 @@ class RentedCarDB:
     # Get a record (in the form of a dictionary) in the table
     def getRented(self, rentedId):
         cursor = self.__db.cursor()
-        cursor.execute("SELECT rentedId, userId, carId, rentedDate, returnedDate, status FROM rentedCar "
+        cursor.execute("SELECT rentedId, userId, carId, rentedDate, returnedDate, status FROM rented_car "
                        "WHERE rentedId = %s", (rentedId,))
         allRented = cursor.fetchall()    # Using fetchall to make sure that cursor will not raise an error
         rented = allRented[0] if allRented and len(allRented) > 0 else None
@@ -73,7 +73,7 @@ class RentedCarDB:
 
         # Add to rented car lib
         cursor = self.__db.cursor()
-        cursor.execute("INSERT INTO rentedCar (carId, userId, status, rentedDate)"
+        cursor.execute("INSERT INTO rented_car (carId, userId, status, rentedDate)"
                        " VALUES (%s, %s, %s, %s)", (carId, userId, 'rented',
                                                     RentedCarDB.formatDate(borrowDate)))
         self.__db.commit()
@@ -85,7 +85,7 @@ class RentedCarDB:
     def returnCar(self, userId, carId):
         # Get the rented car instance
         cursor = self.__db.cursor()
-        cursor.execute("SELECT rentedId FROM rentedCar WHERE userId = %s AND carId = %s AND status = %s",
+        cursor.execute("SELECT rentedId FROM rented_car WHERE userId = %s AND carId = %s AND status = %s",
                        (userId, carId, 'rented'))
         rented = cursor.fetchone()
 
@@ -98,7 +98,7 @@ class RentedCarDB:
             rentedId = rented[0]
 
             #  Update instance
-            cursor.execute("UPDATE rentedCar SET status = %s, returnedDate = %s WHERE rentedId = %s",
+            cursor.execute("UPDATE rented_car SET status = %s, returnedDate = %s WHERE rentedId = %s",
                            ('returned', RentedCarDB.formatDate(returnedDate), rentedId))
             self.__db.commit()
 
