@@ -17,6 +17,11 @@
     "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",
+    "react-hook-form": "^6.8.3",
+    "react-notifications": "^1.7.2",
     "reactstrap": "^8.5.1"
+  },
+  "resolutions": {
+    "material-table/jspdf": "^2.1.0"
   }
 }
