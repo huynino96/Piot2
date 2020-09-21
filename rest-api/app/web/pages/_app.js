@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Container } from 'reactstrap';
 import AppContext from '../context/AppContext';
 import Header from '../components/Partial/Header';
+import { NotificationContainer } from 'react-notifications';
 
 import '../styles/globals.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -21,6 +22,7 @@ function MyApp({ Component, pageProps }) {
             <Container className="mt-5">
                 <Component {...pageProps} />
             </Container>
+            <NotificationContainer />
         </AppContext.Provider>
     )
 }

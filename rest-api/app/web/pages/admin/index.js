@@ -1,106 +1,104 @@
 import { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
+import { NotificationManager } from 'react-notifications';
 import api from '../../api';
 
 const Index = () => {
     const [data, setData] = useState([]);
-    const [iserror, setIserror] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        api.get("/users")
-            .then(res => {
-                setData(res.data.data)
-            })
-            .catch(error=>{
-                setErrorMessage(["Cannot load user data"])
-                setIserror(true)
-            });
+        fetchData();
     }, []);
 
-    const handleRowAdd = (newData, resolve) => {
+    const fetchData = async () => {
+        try {
+            const { data } = await api.get('/cars');
+            const { cars } = data;
+            setData(cars);
+        } catch (e) {
+            NotificationManager.error('Error', 'Cannot load cars data');
+        }
+    };
+
+    const handleRowAdd = async (newData) => {
         //validation
-        let errorList = []
-        if(newData.first_name === undefined){
-            errorList.push("Please enter first name")
+        if (newData.plateNumber === undefined){
+            NotificationManager.error('Please enter plate number');
+            return false;
         }
-        if(newData.last_name === undefined){
-            errorList.push("Please enter last name")
+
+        if (newData.make === undefined){
+            NotificationManager.error('Please enter make');
+            return false;
         }
-        if(newData.email === undefined || validateEmail(newData.email) === false){
-            errorList.push("Please enter a valid email")
+
+        if (newData.bodyType === undefined){
+            NotificationManager.error('Please enter body type');
+            return false;
         }
-        if(errorList.length < 1){ //no error
-            api.post("/users", newData)
-                .then(res => {
-                    let dataToAdd = [...data];
-                    dataToAdd.push(newData);
-                    setData(dataToAdd);
-                    resolve()
-                    setErrorMessages([])
-                    setIserror(false)
-                })
-                .catch(error => {
-                    setErrorMessages(["Cannot add data. Server error!"])
-                    setIserror(true)
-                    resolve()
-                })
-        }else{
-            setErrorMessages(errorList)
-            setIserror(true)
-            resolve()
+
+        if (newData.color === undefined) {
+            NotificationManager.error('Please enter color');
+            return false;
+        }
+
+        if (newData.seats === undefined) {
+            NotificationManager.error('Please enter seats');
+            return false;
+        }
+
+        if (newData.location === undefined) {
+            NotificationManager.error('Please enter location');
+            return false;
+        }
+
+        if (newData.costPerHour === undefined) {
+            NotificationManager.error('Please enter costPerHour');
+            return false;
+        }
+
+        try {
+            const response = await api.post('/cars', newData);
+            const dataToAdd = [...data, { id: response.id, ...newData }];
+            setData(dataToAdd);
+        } catch (e) {
+            NotificationManager.error('Cannot add data. Server error!');
         }
     };
 
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        if (errorList.length < 1) {
-            api.patch("/users/"+newData.id, newData)
-                .then(res => {
-                    const dataUpdate = [...data];
-                    const index = oldData.tableData.id;
-                    dataUpdate[index] = newData;
-                    setData([...dataUpdate]);
-                    resolve()
-                    setIserror(false)
-                    setErrorMessages([])
-                })
-                .catch(error => {
-                    setErrorMessages(["Update failed! Server error"])
-                    setIserror(true)
-                    resolve()
-                })
-        }else{
-            setErrorMessages(errorList)
-            setIserror(true)
-            resolve()
+    const handleRowUpdate = async (newData, oldData) => {
+        try {
+            const { data } = await api.put(`/cars/${newData.carId}`, newData);
+            const dataUpdate = [...data];
+            const index = oldData.tableData.id;
+            dataUpdate[index] = newData;
+            setData([...dataUpdate]);
+        } catch (e) {
+            NotificationManager.error('Update failed! Server error');
         }
     };
 
-    const handleRowDelete = (oldData, resolve) => {
-        api.delete("/users/"+oldData.id)
-            .then(res => {
-                const dataDelete = [...data];
-                const index = oldData.tableData.id;
-                dataDelete.splice(index, 1);
-                setData([...dataDelete]);
-                resolve()
-            })
-            .catch(error => {
-                setErrorMessages(["Delete failed! Server error"])
-                setIserror(true)
-                resolve()
-            })
+    const handleRowDelete = async (oldData) => {
+        try {
+            await api.delete(`/cars/${oldData.carId}`);
+            const dataDelete = [...data];
+            const index = oldData.tableData.id;
+            dataDelete.splice(index, 1);
+            setData([...dataDelete]);
+        } catch (e) {
+            NotificationManager.error('Delete failed! Server error')
+        }
     };
 
     const columns = [
-        {title: "id", field: "id", hidden: true},
-        {title: "Plate Number", field: "plate_number"},
-        {title: "Make", field: "make"},
-        {title: "Body Type", field: "body_type"},
-        {title: "Color", field: "color"},
-        {title: "Seats", field: "seats"},
-        {title: "Location", field: "location"},
-        {title: "Cost Per Hour", field: "cost_per_hour"},
+        {title: 'carId', field: 'carId', hidden: true},
+        {title: 'Plate Number', field: 'plateNumber'},
+        {title: 'Make', field: 'make'},
+        {title: 'Body Type', field: 'bodyType'},
+        {title: 'Color', field: 'color'},
+        {title: 'Seats', field: 'seats'},
+        {title: 'Location', field: 'location'},
+        {title: 'Cost Per Hour', field: 'costPerHour'},
     ];
 
     return (
@@ -109,18 +107,9 @@ const Index = () => {
             columns={columns}
             data={data}
             editable={{
-                onRowUpdate: (newData, oldData) =>
-                    new Promise((resolve) => {
-                        handleRowUpdate(newData, oldData, resolve);
-                    }),
-                onRowAdd: (newData) =>
-                    new Promise((resolve) => {
-                        handleRowAdd(newData, resolve)
-                    }),
-                onRowDelete: (oldData) =>
-                    new Promise((resolve) => {
-                        handleRowDelete(oldData, resolve)
-                    }),
+                onRowUpdate: async (newData, oldData) => await handleRowUpdate(newData, oldData),
+                onRowAdd: async newData => await handleRowAdd(newData),
+                onRowDelete: async oldData => await handleRowDelete(oldData),
             }}
         />
     );
