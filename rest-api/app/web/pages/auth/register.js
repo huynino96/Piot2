@@ -20,9 +20,11 @@ const Register = () => {
 
     const onSubmit = async values => {
         try {
-            const { access_token } = await api.post('/auth/register', values);
+            const { data } = await api.post('/auth/register', values);
+            const { access_token } = data;
             window.localStorage.setItem('access_token', access_token);
             setAuthenticated(true);
+            redirectBasedOnRole(router);
         } catch (e) {
             NotificationManager.error('Can not register');
             setAuthenticated(false);
@@ -35,21 +37,21 @@ const Register = () => {
                 <Label for="first_name">First Name</Label>
                 <Input
                     type="text"
-                    name="first_name"
+                    name="firstName"
                     placeholder="Enter first name"
                     innerRef={register({ required: true })}
                 />
-                {errors.first_name && errors.first_name.message}
+                {errors.firstName && errors.firstName.message}
             </FormGroup>
             <FormGroup>
                 <Label for="last_name">Last Name</Label>
                 <Input
                     type="text"
-                    name="last_name"
+                    name="lastName"
                     placeholder="Enter last name"
                     innerRef={register({ required: true })}
                 />
-                {errors.last_name && errors.last_name.message}
+                {errors.lastName && errors.lastName.message}
             </FormGroup>
             <FormGroup>
                 <Label for="email">Email</Label>
@@ -70,12 +72,12 @@ const Register = () => {
             <FormGroup>
                 <Label for="username">Username</Label>
                 <Input
-                    type="username"
-                    name="username"
+                    type="text"
+                    name="userName"
                     placeholder="Enter username"
                     innerRef={register({ required: true })}
                 />
-                {errors.username && errors.username.message}
+                {errors.userName && errors.userName.message}
             </FormGroup>
             <FormGroup>
                 <Label for="password">Password</Label>

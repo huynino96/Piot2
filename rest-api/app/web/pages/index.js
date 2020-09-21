@@ -1,6 +1,7 @@
 import { useEffect, useContext } from 'react';
 import { useRouter } from 'next/router';
 import AppContext from '../context/AppContext';
+import { redirectBasedOnRole } from '../utils/helpers';
 
 const Home = () => {
     const { authenticated } = useContext(AppContext);
@@ -8,7 +9,7 @@ const Home = () => {
 
     useEffect(() => {
         if (authenticated) {
-            router.push('/user');
+            redirectBasedOnRole(router);
         } else {
             router.push('/auth/login');
         }

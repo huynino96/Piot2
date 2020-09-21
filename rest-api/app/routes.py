@@ -38,22 +38,22 @@ def login():
     if not password:
         raise BadRequest("Password must be provided", 300)
 
-    # Check user is valid or not
-    if (not User.exists(userName)):
-        raise BadRequest("User is already existed in database");
-
     # Get user information
-    user = User.getUser(username)
+    user = User.query.filter_by(userName=userName).first()
+
+    # Check user is valid or not
+    if (not user):
+        raise BadRequest("User is not existed in database");
 
     # Check password is match into database or not
-    if (not check_password_hash(user['password'], password)):
+    if (not check_password_hash(user.password, password)):
         raise BadRequest("Password is not matched")
 
     # Put user information into jwt
-    access_token = jwt.encode(user, 'secret', algorithm='HS256')
+    access_token = jwt.encode({'userName': userName}, 'secret')
 
     # Return jwt
-    return jsonify({"success": True, "access_token": access_token})
+    return jsonify({ "success": True, "access_token": access_token.decode('utf-8') })
 
 @app.route("/auth/register", methods=["POST"])
 def register():
@@ -75,17 +75,13 @@ def register():
     if not password:
         raise BadRequest("Password must be provided", 300)
 
+
     # Check user is valid or not
-    if (User.exists(userName)):
+    if (User.query.filter_by(userName=userName).first()):
         raise BadRequest("User is already existed");
 
-    user = User
-
-    # Put user information into jwt
-    access_token = jwt.encode(user, 'secret', algorithm='HS256')
-
-    # Create date
-    user = User(firstName=firstName, lastName=lastName, userName=userName, email=email, password=password)
+    # Create ser
+    user = User(firstName=firstName, lastName=lastName, userName=userName, email=email, password=generate_password_hash(password))
 
     # Try to save to db
     try:
@@ -95,10 +91,10 @@ def register():
         return jsonify({"error": str(e)})
 
     # Put user information into jwt
-    access_token = jwt.encode(user, 'secret', algorithm='HS256')
+    access_token = jwt.encode({ 'userName': userName }, 'secret')
 
     # Return jwt
-    return jsonify({"success": True, "access_token": access_token})
+    return jsonify({ "success": True, "access_token": access_token.decode('utf-8') })
 
 @app.route("/cars")
 @app.route("/cars/<int:page>")

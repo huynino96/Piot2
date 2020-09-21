@@ -20,9 +20,11 @@ const Login = () => {
 
     const onSubmit = async values => {
         try {
-            const { access_token } = await api.post('/auth/login', values);
+            const { data } = await api.post('/auth/login', values);
+            const { access_token } = data;
             window.localStorage.setItem('access_token', access_token);
             setAuthenticated(true);
+            redirectBasedOnRole(router);
         } catch (e) {
             NotificationManager.error('Can not login');
             setAuthenticated(false);
@@ -32,14 +34,14 @@ const Login = () => {
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <FormGroup>
-                <Label for="username">Username</Label>
+                <Label for="userName">Username</Label>
                 <Input
-                    type="username"
-                    name="username"
+                    type="text"
+                    name="userName"
                     placeholder="Enter username"
                     innerRef={register({ required: true })}
                 />
-                {errors.username && errors.username.message}
+                {errors.userName && errors.userName.message}
             </FormGroup>
             <FormGroup>
                 <Label for="password">Password</Label>
