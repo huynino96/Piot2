@@ -88,6 +88,46 @@ def add_cars():
         return jsonify({"error": str(e)})
     return jsonify({"success": True, "id": car.carId})
 
+@app.route("/cars/<int:id>", methods=["PUT"])
+def update_cars(id):
+    # Create car object
+    plateNumber = request.json["plateNumber"]
+    make = request.json["make"]
+    bodyType = request.json["bodyType"]
+    color = request.json["color"]
+    seats = request.json["seats"]
+    location = request.json["location"]
+    costPerHour = request.json["costPerHour"]
+
+    # Catch error
+    if not plateNumber:
+        raise BadRequest("Plate Number can not be empty", 40002)
+    if not make:
+        raise BadRequest("Brand can not be empty", 40002)
+    if not color:
+        raise BadRequest("Color can not be empty", 40002)
+    if not seats:
+        raise BadRequest("Numeber of seats can not be empty", 40002)
+    if not location:
+        raise BadRequest("Car's Location can not be empty", 40002)
+    if not costPerHour:
+        raise BadRequest("Cost Per Hour can not be empty", 40002)
+
+    # Create date
+    car = Car.query.get(id)
+    car.plateNumber = plateNumber
+    car.make = make
+    car.color = color
+    car.seats = seats
+    car.location = location
+    car.costPerHour = costPerHour
+
+    # Try to save to db
+    try:
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    return jsonify({"success": True, "id": car.carId})
 
 @app.route("/cars/<int:id>", methods=["DELETE"])
 def delete_car(id):
@@ -144,6 +184,41 @@ def add_users():
         return jsonify({"error": str(e)})
     return jsonify({"success": True, "id": user.userId})
 
+@app.route("/users/<int:id>", methods=["PUT"])
+def update_users(id):
+    # Create user object
+    firstName = request.json["firstName"]
+    lastName = request.json["lastName"]
+    email = request.json["email"]
+    userName = request.json["userName"]
+    password = request.json["password"]
+
+    # Catch error
+    if not firstName:
+        raise BadRequest("First Name can not be empty", 40002)
+    if not lastName:
+        raise BadRequest("Last Name can not be empty", 40002)
+    if not userName:
+        raise BadRequest("User Name can not be empty", 40002)
+    if not email:
+        raise BadRequest("Email of seats can not be empty", 40002)
+    if not password:
+        raise BadRequest("Password can not be empty", 40002)
+
+    # Create date
+    user = User.query.get(id)
+    user.firstName = firstName
+    user.lastName = lastName
+    user.email = email
+    user.userName = userName
+    user.password = generate_password_hash(password)
+
+    # Try to save to db
+    try:
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    return jsonify({"success": True, "id": user.userId})
 
 @app.route("/users/<int:id>", methods=["DELETE"])
 def delete_user(id):

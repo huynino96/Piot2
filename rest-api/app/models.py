@@ -56,14 +56,14 @@ class RentedCar(db.Model):
     returnedDate = db.Column(db.DateTime, nullable=True)
 
 
-# This function will generate data for creating graph about rented and returned books
+# This function will generate data for creating graph about rented and returned cars
 def getDailyAnalytics():
-    # Group the number of rented books per day
+    # Group the number of rented cars per day
     totalrented = db.session.query(sa.func.date_format(RentedCar.rentedDate, '%d-%m-%Y'),
                                       sa.func.count(RentedCar.rentedDate)) \
         .group_by(sa.func.date_format(RentedCar.rentedDate, '%d-%m-%Y')).all()
 
-    # Group the number of returned books per day
+    # Group the number of returned cars per day
     totalReturned = db.session.query(sa.func.date_format(RentedCar.returnedDate, '%d-%m-%Y'),
                                       sa.func.count(RentedCar.rentedDate),
                                       sa.func.count(RentedCar.returnedDate)) \
@@ -76,7 +76,7 @@ def getDailyAnalytics():
     totalData = dict()
 
     # Join two dataset to create an array containing
-    # the number of borrow and returned book in a day
+    # the number of borrow and returned car in a day
     for item in totalrented:
         totalData[item["date"]] = {"borrowCount": item["count"], "returnCount": 0}
 
