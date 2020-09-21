@@ -1,33 +1,29 @@
-import {useContext, useEffect} from 'react';
+import { useEffect } from 'react';
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { useForm } from 'react-hook-form';
 import { NotificationManager } from 'react-notifications';
 import { useRouter } from 'next/router';
 import api from '../../api';
-import AppContext from '../../context/AppContext';
-import { redirectBasedOnRole } from '../../utils/helpers';
+import { redirectBasedOnRole, isAuthenticate } from '../../utils/helpers';
 
 const Login = () => {
     const { handleSubmit, register, errors } = useForm();
-    const { authenticated, setAuthenticated } = useContext(AppContext);
     const router = useRouter();
 
     useEffect(() => {
-        if (authenticated) {
+        if (isAuthenticate()) {
             redirectBasedOnRole(router);
         }
-    }, [authenticated]);
+    }, [isAuthenticate()]);
 
     const onSubmit = async values => {
         try {
             const { data } = await api.post('/auth/login', values);
             const { access_token } = data;
             window.localStorage.setItem('access_token', access_token);
-            setAuthenticated(true);
             redirectBasedOnRole(router);
         } catch (e) {
             NotificationManager.error('Can not login');
-            setAuthenticated(false);
         }
     };
 

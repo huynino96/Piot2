@@ -1,6 +1,5 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
-import AppContext from '../../context/AppContext';
 import {
     Collapse,
     Navbar,
@@ -11,17 +10,15 @@ import {
     NavLink,
 } from "reactstrap";
 import Link from 'next/link'
-import {isRole} from "../../utils/helpers";
+import { isRole, isAuthenticate } from "../../utils/helpers";
 
 const Header = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { authenticated, setAuthenticated } = useContext(AppContext);
     const router = useRouter();
     const toggle = () => setIsOpen(!isOpen);
 
     const handleLogout = () => {
         window.localStorage.removeItem('access_token');
-        setAuthenticated(false);
         router.push('/');
     };
 
@@ -57,7 +54,7 @@ const Header = () => {
                             </NavItem>
                         </>
                     )}
-                    {isRole('maanger') && (
+                    {isRole('manager') && (
                         <NavItem>
                             <Link href="/manager">
                                 <NavLink>Manager</NavLink>
@@ -83,7 +80,7 @@ const Header = () => {
                             </NavItem>
                         </>
                     )}
-                    {!authenticated && (
+                    {!isAuthenticate() && (
                         <>
                             <NavItem>
                                 <Link href="/auth/login">
@@ -98,7 +95,7 @@ const Header = () => {
                         </>
                     )}
                 </Nav>
-                {authenticated && (
+                {isAuthenticate() && (
                     <Nav className="ml-auto" navbar>
                         <NavItem>
                             <NavLink onClick={handleLogout}>Logout</NavLink>

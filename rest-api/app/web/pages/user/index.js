@@ -1,22 +1,24 @@
 import { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
 import api from '../../api';
+import { NotificationManager } from 'react-notifications';
 
 const Index = () => {
     const [data, setData] = useState([]);
-    const [iserror, setIserror] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        api.get("/users")
-            .then(res => {
-                setData(res.data.data)
-            })
-            .catch(error=>{
-                setErrorMessage(["Cannot load user data"])
-                setIserror(true)
-            });
+        fetchData();
     }, []);
+
+    const fetchData = async () => {
+        try {
+            const { data } = await api.get('/cars');
+            const { cars } = data;
+            setData(cars);
+        } catch (e) {
+            NotificationManager.error('Can not get list of cars');
+        }
+    };
 
     const handleBook = (event, rowData) => {
 
@@ -24,13 +26,13 @@ const Index = () => {
 
     const columns = [
         {title: "id", field: "id", hidden: true},
-        {title: "Plate Number", field: "email"},
+        {title: "Plate Number", field: "plateNumber"},
         {title: "Make", field: "make"},
-        {title: "Body Type", field: "body_type"},
+        {title: "Body Type", field: "bodyType"},
         {title: "Color", field: "color"},
         {title: "Seats", field: "seats"},
         {title: "Location", field: "location"},
-        {title: "Cost Per Hour", field: "cost_per_hour"},
+        {title: "Cost Per Hour", field: "costPerHour"},
     ];
 
     const actions = [

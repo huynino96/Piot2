@@ -34,14 +34,22 @@ const isRole = name => {
             return true;
         } else if (userName.indexOf('manager') > -1 && name === 'manager') {
             return true;
-        } else if (name === 'user') {
+        } else if (userName.indexOf('admin') < 0 && userName.indexOf('manager') < 0 &&name === 'user') {
             return true;
         }
     }
     return false;
 };
 
+const isAuthenticate = () => {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+    return window.localStorage.getItem('access_token') !== null;
+};
+
 export {
     redirectBasedOnRole,
     isRole,
+    isAuthenticate
 }

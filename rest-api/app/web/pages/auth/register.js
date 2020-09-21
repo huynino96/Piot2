@@ -3,31 +3,27 @@ import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { useForm } from 'react-hook-form';
 import { NotificationManager } from 'react-notifications';
 import { useRouter } from 'next/router';
-import AppContext from '../../context/AppContext';
 import api from '../../api';
-import { redirectBasedOnRole } from '../../utils/helpers';
+import { isAuthenticate, redirectBasedOnRole } from '../../utils/helpers';
 
 const Register = () => {
     const { handleSubmit, register, errors } = useForm();
-    const { authenticated, setAuthenticated } = useContext(AppContext);
     const router = useRouter();
 
     useEffect(() => {
-        if (authenticated) {
+        if (isAuthenticate()) {
             redirectBasedOnRole(router);
         }
-    }, [authenticated]);
+    }, []);
 
     const onSubmit = async values => {
         try {
             const { data } = await api.post('/auth/register', values);
             const { access_token } = data;
             window.localStorage.setItem('access_token', access_token);
-            setAuthenticated(true);
             redirectBasedOnRole(router);
         } catch (e) {
             NotificationManager.error('Can not register');
-            setAuthenticated(false);
         }
     };
 

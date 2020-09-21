@@ -50,7 +50,7 @@ class CarDatabase:
 
     def searchByNoSeats(self, seats):
         return self.__car_db.searchByNumSeats(seats)
-    
+
     def searchByLocation(self, location):
         return self.__car_db.searchByLocation(location)
 
@@ -129,7 +129,7 @@ class CarDatabase:
         return rentedId
 
     # Method to find a car using plate number and return it
-    def returnCarByPlateNum(self, userId, plateNumber):
+    def returnCarByPlateNumber(self, userId, plateNumber):
         # Get car
         cars = self.__car_db.searchByPlateNumber(plateNumber)
         if len(cars) == 0:
