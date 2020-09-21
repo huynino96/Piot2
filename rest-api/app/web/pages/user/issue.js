@@ -1,6 +1,6 @@
 import { Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import api from '../../api';
-import {useForm} from "react-hook-form";
+import { useForm } from 'react-hook-form';
 
 const Issue = () => {
     const { handleSubmit, register, errors } = useForm();
