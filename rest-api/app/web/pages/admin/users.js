@@ -58,8 +58,9 @@ const Users = () => {
     };
 
     const handleRowUpdate = async (newData, oldData) => {
+        console.log(newData);
         try {
-            const { data } = await api.put(`/users/${newData.userId}`, newData);
+            await api.put(`/users/${newData.userId}`, newData);
             const dataUpdate = [...data];
             const index = oldData.tableData.id;
             dataUpdate[index] = newData;
