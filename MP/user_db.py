@@ -29,7 +29,10 @@ class UserDB:
         return [
             {
                 "id": item[0],
-                "name": item[1]
+                "firstName": item[1],
+                "lastName": item[2],
+                "userName": item[3],
+                "email": item[4]
             } for item in users
         ] if users is not None else []
 
@@ -41,11 +44,14 @@ class UserDB:
 
     def getUser(self, username):
         cursor = self.__db.cursor()
-        cursor.execute("SELECT userId, userName FROM user WHERE userName = %s", (username,))
+        cursor.execute("SELECT userId, firstName, lastName, userName, email FROM user WHERE userName = %s", (username,))
         user = cursor.fetchone()
         return {
             "id": user[0],
-            "name": user[1]
+            "firstName": user[1],
+            "lastName": user[2],
+            "userName": user[3],
+            "email": user[4],
         } if user is not None else None
 
     # Save a user if not exists, otherwise raise an exception

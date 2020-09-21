@@ -1,6 +1,7 @@
 from app import app, basic_auth, db
-from app.models import Car, getMonthlyAnalytics, getDailyAnalytics, carsSchema
+from app.models import Car, User, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema
 from flask import jsonify, request, render_template, send_from_directory
+from werkzeug.security import generate_password_hash
 import re
 
 
@@ -27,8 +28,8 @@ def admin():
 
 @app.route("/auth", methods=["POST"])
 def auth():
-    username = request.form.get("username")
-    password = request.form.get("password")
+    username = request.json["username"]
+    password = request.json["password"]
 
     if not username:
         raise BadRequest("Username must be provided", 300)
@@ -42,7 +43,6 @@ def auth():
 
 @app.route("/cars")
 @app.route("/cars/<int:page>")
-@basic_auth.required
 def cars(page=1):
     allCars = Car.query.paginate(page, per_page=5)
     return jsonify({
@@ -52,16 +52,16 @@ def cars(page=1):
     })
 
 
-@app.route("/cars/add", methods=["POST"])
+@app.route("/cars", methods=["POST"])
 def add_cars():
     # Create car object
-    plateNumber = request.form["plate_number"]
-    make = request.form["make"]
-    bodyType = request.form["body_type"]
-    color = request.form["color"]
-    seats = request.form["seats"]
-    location = request.form["location"]
-    costPerHour = request.form["cost_per_hour"]
+    plateNumber = request.json["plateNumber"]
+    make = request.json["make"]
+    bodyType = request.json["bodyType"]
+    color = request.json["color"]
+    seats = request.json["seats"]
+    location = request.json["location"]
+    costPerHour = request.json["costPerHour"]
 
     # Catch error
     if not plateNumber:
@@ -89,7 +89,7 @@ def add_cars():
     return jsonify({"success": True, "id": car.carId})
 
 
-@app.route("/cars/delete/<int:id>", methods=["DELETE"])
+@app.route("/cars/<int:id>", methods=["DELETE"])
 def delete_car(id):
     if Car.query.filter(Car.carId == id).count() == 0:
         raise BadRequest("car does not exist", 404)
@@ -101,16 +101,70 @@ def delete_car(id):
             return jsonify({"error": str(e)})
         return jsonify({"success": True, "id": id})
 
+@app.route("/users")
+@app.route("/users/<int:page>")
+def users(page=1):
+    allUsers = User.query.paginate(page, per_page=5)
+    return jsonify({
+        "users": usersSchema.dump(allUsers.items),
+        "has_next": allUsers.has_next,
+        "has_prev": allUsers.has_prev
+    })
+
+
+@app.route("/users", methods=["POST"])
+def add_users():
+    # Create user object
+    firstName = request.json["firstName"]
+    lastName = request.json["lastName"]
+    userName = request.json["userName"]
+    email = request.json["email"]
+    password = request.json["password"]
+
+    # Catch error
+    if not firstName:
+        raise BadRequest("First Name can not be empty", 40002)
+    if not lastName:
+        raise BadRequest("Last Name can not be empty", 40002)
+    if not userName:
+        raise BadRequest("User Name can not be empty", 40002)
+    if not email:
+        raise BadRequest("Email of seats can not be empty", 40002)
+    if not password:
+        raise BadRequest("Password can not be empty", 40002)
+
+    # Create date
+    user = User(firstName=firstName, lastName=lastName, userName=userName, email=email, password=generate_password_hash(password))
+
+    # Try to save to db
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    return jsonify({"success": True, "id": user.userId})
+
+
+@app.route("/users/<int:id>", methods=["DELETE"])
+def delete_user(id):
+    if User.query.filter(User.userId == id).count() == 0:
+        raise BadRequest("user does not exist", 404)
+    else:
+        try:
+            User.query.filter(User.userId == id).delete()
+            db.session.commit()
+        except Exception as e:
+            return jsonify({"error": str(e)})
+        return jsonify({"success": True, "id": id})
+
 
 @app.route("/analytics/daily")
-@basic_auth.required
 def dailyAnalytics():
     result = getDailyAnalytics()
     return jsonify(result)
 
 
 @app.route("/analytics/monthly")
-@basic_auth.required
 def monthlyAnalytics():
     result = getMonthlyAnalytics()
     return jsonify(result)

@@ -19,7 +19,11 @@ class Admin(db.Model):
 
 class User(db.Model):
     userId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    firstName = db.Column(db.String(100), nullable=False)
+    lastName = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     userName = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(128), nullable=False)
 
 
 class Car(db.Model):
@@ -38,6 +42,9 @@ class CarSchema(ModelSchema):
     class Meta:
         model = Car
 
+class UserSchema(ModelSchema):
+    class Meta:
+        model = User
 
 class RentedCar(db.Model):
     __table_args__ = {'extend_existing': True}
@@ -124,3 +131,5 @@ def getMonthlyAnalytics():
 
 carsSchema = CarSchema(many=True)
 carSchema = CarSchema()
+usersSchema = UserSchema(many=True)
+userSchema = UserSchema()

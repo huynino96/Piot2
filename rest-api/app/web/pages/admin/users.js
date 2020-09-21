@@ -1,100 +1,93 @@
 import { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
 import api from '../../api';
+import { NotificationManager } from 'react-notifications';
 
 const Users = () => {
     const [data, setData] = useState([]);
-    const [iserror, setIserror] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        api.get("/users")
-            .then(res => {
-                setData(res.data.data)
-            })
-            .catch(error=>{
-                setErrorMessage(["Cannot load user data"])
-                setIserror(true)
-            });
+        fetchData();
     }, []);
 
-    const handleRowAdd = (newData, resolve) => {
+    const fetchData = async () => {
+        try {
+            const { data } = await api.get('/users');
+            const { users } = data;
+            setData(users);
+        } catch (e) {
+            NotificationManager.error('Error', 'Cannot load user data');
+        }
+    };
+
+    const handleRowAdd = async (newData) => {
         //validation
-        let errorList = []
-        if(newData.first_name === undefined){
-            errorList.push("Please enter first name")
+        if (newData.firstName === undefined){
+            NotificationManager.error('Please enter first name');
+            return false;
         }
-        if(newData.last_name === undefined){
-            errorList.push("Please enter last name")
+
+        if (newData.lastName === undefined){
+            NotificationManager.error('Please enter last name');
+            return false;
         }
-        if(newData.email === undefined || validateEmail(newData.email) === false){
-            errorList.push("Please enter a valid email")
+
+        if (newData.email === undefined){
+            NotificationManager.error('Please enter email');
+            return false;
         }
-        if(errorList.length < 1){ //no error
-            api.post("/users", newData)
-                .then(res => {
-                    let dataToAdd = [...data];
-                    dataToAdd.push(newData);
-                    setData(dataToAdd);
-                    resolve()
-                    setErrorMessages([])
-                    setIserror(false)
-                })
-                .catch(error => {
-                    setErrorMessages(["Cannot add data. Server error!"])
-                    setIserror(true)
-                    resolve()
-                })
-        }else{
-            setErrorMessages(errorList)
-            setIserror(true)
-            resolve()
+
+        if (newData.userName === undefined) {
+            NotificationManager.error('Please enter username');
+            return false;
+        }
+
+        if (newData.password === undefined) {
+            NotificationManager.error('Please enter password');
+            return false;
+        }
+
+        try {
+            const response = await api.post('/users', newData);
+            const dataToAdd = [...data, { id: response.id, ...newData }];
+            setData(dataToAdd);
+        } catch (e) {
+            console.log(e);
+            NotificationManager.error('Cannot add data. Server error!');
         }
     };
 
-    const handleRowUpdate = (newData, oldData, resolve) => {
-        if (errorList.length < 1) {
-            api.patch("/users/"+newData.id, newData)
-                .then(res => {
-                    const dataUpdate = [...data];
-                    const index = oldData.tableData.id;
-                    dataUpdate[index] = newData;
-                    setData([...dataUpdate]);
-                    resolve()
-                    setIserror(false)
-                    setErrorMessages([])
-                })
-                .catch(error => {
-                    setErrorMessages(["Update failed! Server error"])
-                    setIserror(true)
-                    resolve()
-                })
-        }else{
-            setErrorMessages(errorList)
-            setIserror(true)
-            resolve()
+    const handleRowUpdate = async (newData, oldData) => {
+        try {
+            const { data } = await api.put(`/users/${newData.userId}`, newData);
+            const dataUpdate = [...data];
+            const index = oldData.tableData.id;
+            dataUpdate[index] = newData;
+            setData([...dataUpdate]);
+        } catch (e) {
+            NotificationManager.error('Update failed! Server error');
         }
     };
 
-    const handleRowDelete = (oldData, resolve) => {
-        api.delete("/users/"+oldData.id)
-            .then(res => {
-                const dataDelete = [...data];
-                const index = oldData.tableData.id;
-                dataDelete.splice(index, 1);
-                setData([...dataDelete]);
-                resolve()
-            })
-            .catch(error => {
-                setErrorMessages(["Delete failed! Server error"])
-                setIserror(true)
-                resolve()
-            })
+    const handleRowDelete = async (oldData) => {
+        try {
+            await api.delete(`/users/${oldData.userId}`);
+            const dataDelete = [...data];
+            const index = oldData.tableData.id;
+            dataDelete.splice(index, 1);
+            setData([...dataDelete]);
+        } catch (e) {
+            NotificationManager.error('Delete failed! Server error')
+        }
     };
 
     const columns = [
-        {title: "id", field: "id", hidden: true},
-        {title: "Email", field: "email"},
+        {title: 'userId', field: 'userId', hidden: true},
+        {title: 'First Name', field: 'firstName'},
+        {title: 'Last Name', field: 'lastName'},
+        {title: 'User Name', field: 'userName'},
+        {title: 'Email', field: 'email'},
+        {title: 'Password', field: 'password'},
     ];
 
     return (
@@ -103,18 +96,9 @@ const Users = () => {
             columns={columns}
             data={data}
             editable={{
-                onRowUpdate: (newData, oldData) =>
-                    new Promise((resolve) => {
-                        handleRowUpdate(newData, oldData, resolve);
-                    }),
-                onRowAdd: (newData) =>
-                    new Promise((resolve) => {
-                        handleRowAdd(newData, resolve)
-                    }),
-                onRowDelete: (oldData) =>
-                    new Promise((resolve) => {
-                        handleRowDelete(oldData, resolve)
-                    }),
+                onRowUpdate: async (newData, oldData) => await handleRowUpdate(newData, oldData),
+                onRowAdd: async newData => await handleRowAdd(newData),
+                onRowDelete: async oldData => await handleRowDelete(oldData),
             }}
         />
     );
