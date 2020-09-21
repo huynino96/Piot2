@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as sa
 from marshmallow_sqlalchemy import ModelSchema
 
+db.metadata.clear()
+
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128), unique=True, index=True)
@@ -30,12 +32,15 @@ class Car(db.Model):
     location = db.Column(db.String(100), nullable=False)
     costPerHour = db.Column(db.Integer, nullable=False)
 
+db.create_all()
+
 class CarSchema(ModelSchema):
     class Meta:
         model = Car
 
 
 class RentedCar(db.Model):
+    __table_args__ = {'extend_existing': True}
     rentedId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     carId = db.Column(db.Integer, db.ForeignKey('car.carId'), nullable=False)
     userId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable=False)
@@ -117,7 +122,5 @@ def getMonthlyAnalytics():
 
     return result
 
-db.metadata.clear()
 carsSchema = CarSchema(many=True)
 carSchema = CarSchema()
-db.create_all()
