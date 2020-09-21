@@ -1,7 +1,8 @@
 from app import app, basic_auth, db
 from app.models import Car, User, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema
 from flask import jsonify, request, render_template, send_from_directory
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
 import re
 
 
@@ -26,20 +27,78 @@ def admin():
     return render_template("index.html")
 
 
-@app.route("/auth", methods=["POST"])
-def auth():
-    username = request.json["username"]
+@app.route("/auth/login", methods=["POST"])
+def login():
+    userName = request.json["userName"]
     password = request.json["password"]
 
-    if not username:
+    # Validation
+    if not userName:
         raise BadRequest("Username must be provided", 300)
     if not password:
         raise BadRequest("Password must be provided", 300)
-    if username != app.config.get("BASIC_AUTH_USERNAME") or password != app.config.get("BASIC_AUTH_PASSWORD"):
-        raise BadRequest("Invalid username and password", 301)
-    else:
-        return jsonify({"success": True})
 
+    # Check user is valid or not
+    if (!User.exists(userName)):
+        raise BadRequest("User is already existed in database");
+
+    # Get user information
+    user = User.getUser(username)
+
+    # Check password is match into database or not
+    if (!check_password_hash(user['password'], password))
+        raise BadRequest("Password is not matched")
+
+    # Put user information into jwt
+    access_token = jwt.encode(user, 'secret', algorithm='HS256')
+
+    # Return jwt
+    return jsonify({"success": True, "access_token": access_token})
+
+@app.route("/auth/register", methods=["POST"])
+def register():
+    firstName = request.json["firstName"]
+    lastName = request.json["lastName"]
+    email = request.json["email"]
+    userName = request.json["userName"]
+    password = request.json["password"]
+
+    # Validation
+    if not firstName:
+        raise BadRequest("First Name must be provided", 300)
+    if not lastName:
+        raise BadRequest("Last Name must be provided", 300)
+    if not email:
+        raise BadRequest("Email must be provided", 300)
+    if not userName:
+        raise BadRequest("Username must be provided", 300)
+    if not password:
+        raise BadRequest("Password must be provided", 300)
+
+    # Check user is valid or not
+    if (User.exists(userName)):
+        raise BadRequest("User is already existed");
+
+    user = User
+
+    # Put user information into jwt
+    access_token = jwt.encode(user, 'secret', algorithm='HS256')
+
+    # Create date
+    user = User(firstName=firstName, lastName=lastName, userName=userName, email=email, password=password)
+
+    # Try to save to db
+    try:
+        db.session.add(user)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    # Put user information into jwt
+    access_token = jwt.encode(user, 'secret', algorithm='HS256')
+
+    # Return jwt
+    return jsonify({"success": True, "access_token": access_token})
 
 @app.route("/cars")
 @app.route("/cars/<int:page>")

@@ -8,20 +8,14 @@ const Login = () => {
     return (
         <Form onSubmit={handleSubmit(onSubmit)}>
             <FormGroup>
-                <Label for="email">Email</Label>
+                <Label for="username">Username</Label>
                 <Input
-                    type="email"
-                    name="email"
-                    placeholder="Enter email"
-                    innerRef={register({
-                        required: "Required",
-                        pattern: {
-                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                            message: "invalid email address"
-                        }
-                    })}
+                    type="username"
+                    name="username"
+                    placeholder="Enter username"
+                    innerRef={register({ required: true })}
                 />
-                {errors.email && errors.email.message}
+                {errors.username && errors.username.message}
             </FormGroup>
             <FormGroup>
                 <Label for="password">Password</Label>

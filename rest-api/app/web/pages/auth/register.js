@@ -44,6 +44,16 @@ const Register = () => {
                 {errors.email && errors.email.message}
             </FormGroup>
             <FormGroup>
+                <Label for="username">Username</Label>
+                <Input
+                    type="username"
+                    name="username"
+                    placeholder="Enter username"
+                    innerRef={register({ required: true })}
+                />
+                {errors.username && errors.username.message}
+            </FormGroup>
+            <FormGroup>
                 <Label for="password">Password</Label>
                 <Input
                     type="password"
