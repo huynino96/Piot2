@@ -13,6 +13,7 @@
     "@material-ui/lab": "^4.0.0-alpha.56",
     "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
+    "jwt-decode": "^3.0.0-beta.2",
     "material-table": "^1.69.0",
     "next": "9.5.3",
     "react": "16.13.1",

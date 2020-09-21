@@ -39,14 +39,14 @@ def login():
         raise BadRequest("Password must be provided", 300)
 
     # Check user is valid or not
-    if (!User.exists(userName)):
+    if (not User.exists(userName)):
         raise BadRequest("User is already existed in database");
 
     # Get user information
     user = User.getUser(username)
 
     # Check password is match into database or not
-    if (!check_password_hash(user['password'], password))
+    if (not check_password_hash(user['password'], password)):
         raise BadRequest("Password is not matched")
 
     # Put user information into jwt
