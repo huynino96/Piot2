@@ -37,7 +37,7 @@ class Car(db.Model):
     seats = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(100), nullable=False)
     costPerHour = db.Column(db.Integer, nullable=False)
-    is_booked = db.Column(db.Boolean, default=False, nullable=False)
+    isBooked = db.Column(db.Boolean, default=False, nullable=False)
 
 class CarSchema(ModelSchema):
     class Meta:

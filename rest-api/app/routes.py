@@ -333,7 +333,7 @@ def book_car(id):
 
     # Update car
     car = Car.query.get(id)
-    car.is_booked = True
+    car.isBooked = True
 
     # Try to save to db
     try:
@@ -360,7 +360,7 @@ def cancel_car(id):
 
     # Update car
     car = Car.query.get(id)
-    car.is_booked = False
+    car.isBooked = False
 
     # Try to save to db
     try:
