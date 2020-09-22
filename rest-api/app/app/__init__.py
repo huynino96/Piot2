@@ -11,8 +11,8 @@ class Config(object):
     # CloudSQL & SQLAlchemy configuration
     # Replace the following values the respective values of your Cloud SQL
     # instance.
-    CLOUDSQL_USER = 'car'
-    CLOUDSQL_PASSWORD = '123456'
+    CLOUDSQL_USER = 'root'
+    CLOUDSQL_PASSWORD = 'HJrMEtG2hB0FNqit'
     CLOUDSQL_DATABASE = 'car'
     # Set this value to the Cloud SQL connection name, e.g.
     #   "red-planet-288402:asia-southeast1:piot2".
@@ -30,7 +30,7 @@ class Config(object):
 
     # Alternatively, you could use a local MySQL instance for testing.
     SQLALCHEMY_DATABASE_URI = (
-        'mysql+pymysql://{user}:{password}@127.0.0.1:{port}/{database}').format(
+        'mysql+pymysql://{user}:{password}@34.87.84.69:{port}/{database}').format(
         user=CLOUDSQL_USER,
         password=CLOUDSQL_PASSWORD,
         port=CLOUDSQL_CONNECTION_PORT,
