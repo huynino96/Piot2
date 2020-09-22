@@ -31,7 +31,21 @@ Web app localhost
 3. Use "yarn install" to install all the dependencies from "package.json"
 4. Use "yarn dev" to start the web locally via "localhost:5000/<user-type>"
 
-Web app URL
+User Type
 ----------------------------------
-* Visit website: 
+There are 3 types of users: Admin, Manager and User
+All of them will be defined in User Model (in model.py)
+The admin and manager are created as "admin" and "manager" username so no one can create admin and manager anymore.
+
+*** Admin: 
+username: admin
+pass: 123456
+
+*** Manager:
+username: manager
+pass: 123456
+
+*** User (more users can register to the system):
+username: huy
+pass: 123456
 
