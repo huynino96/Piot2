@@ -43,3 +43,7 @@ Face Database
 * Method: save(self, image, name):
     Param: image: image input, name: face name
     Function: convert the image into gray and save the image with the face name.
+
+Dataset
+----------------------------------
+Create Dataset folder to save all the face image

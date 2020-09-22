@@ -48,3 +48,8 @@ Header
 ----------------------------------------------------
 Header is a NavBar to navigate users to the right path when clicked on.
 
+Rent/Return
+----------------------------------------------------
+If the car has been booked, they will be removed from available car. Likewise, when the car is returned, they will be showed in available page
+
+
