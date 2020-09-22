@@ -34,7 +34,9 @@ Web app localhost
 User Type
 ----------------------------------
 There are 3 types of users: Admin, Manager and User
+
 All of them will be defined in User Model (in model.py)
+
 The admin and manager are created as "admin" and "manager" username so no one can create admin and manager anymore.
 
 **Admin:** 
