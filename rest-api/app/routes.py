@@ -99,7 +99,7 @@ def register():
 @app.route("/cars")
 @app.route("/cars/<int:page>")
 def cars(page=1):
-    allCars = Car.query.paginate(page, per_page=5)
+    allCars = Car.query.paginate(page, per_page=99)
     return jsonify({
         "cars": carsSchema.dump(allCars.items),
         "has_next": allCars.has_next,
@@ -199,7 +199,7 @@ def delete_car(id):
 @app.route("/users")
 @app.route("/users/<int:page>")
 def users(page=1):
-    allUsers = User.query.paginate(page, per_page=5)
+    allUsers = User.query.paginate(page, per_page=99)
     return jsonify({
         "users": usersSchema.dump(allUsers.items),
         "has_next": allUsers.has_next,
@@ -330,7 +330,7 @@ def add_reports():
 
 @app.route("/booked_cars", methods=["GET"])
 def booked_cars(page=1):
-    allBookedCars = RentedCar.query.paginate(page, per_page=5)
+    allBookedCars = RentedCar.query.paginate(page, per_page=99)
     json = RentedCarJson(many=True)
     return jsonify({
         "bookedCars": json.dump(allBookedCars.items),

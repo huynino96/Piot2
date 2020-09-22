@@ -19,7 +19,7 @@ const Index = () => {
         try {
             const { data } = await api.get('/cars');
             const { cars } = data;
-            setData(cars.filter(item => !item.is_booked));
+            setData(cars.filter(item => !item.isBooked));
         } catch (e) {
             NotificationManager.error('Can not get list of cars');
         }
