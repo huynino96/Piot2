@@ -1,5 +1,5 @@
 from app import app, basic_auth, db
-from app.models import Car, User, RentedCar, RentedCarJson, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema, rentedCarsSchema
+from app.models import Car, User, RentedCar, RentedCarJson, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema, rentedCarsSchema, Report, reportsSchema, ReportJson
 from flask import jsonify, request, render_template, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
@@ -287,6 +287,47 @@ def delete_user(id):
             return jsonify({"error": str(e)})
         return jsonify({"success": True, "id": id})
 
+@app.route("/reports")
+def reports():
+    allReports = Report.query.all()
+    json = ReportJson(many=True)
+    return jsonify({
+        "reports": json.dump(allReports),
+    })
+
+@app.route("/reports", methods=["POST"])
+def add_reports():
+    if not request.headers['Authorization']:
+        raise BadRequest('You need to login', 300)
+
+    # Get information of user
+    authorization = request.headers['Authorization']
+    accessToken = jwt.decode(authorization, 'secret')
+    userName = accessToken['userName']
+    user = User.query.filter_by(userName=userName).first()
+
+    # Create object
+    carId = request.json["carId"]
+    userId = user.userId
+    message = request.json["message"]
+
+    # Catch error
+    if not carId:
+        raise BadRequest("Car can not be empty", 40002)
+    if not message:
+        raise BadRequest("Message not be empty", 40002)
+
+    # Create report
+    report = Report(carId=carId, userId=userId, message=message)
+
+    # Try to save to db
+    try:
+        db.session.add(report)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    return jsonify({"success": True, "id": report.reportId})
+
 @app.route("/booked_cars", methods=["GET"])
 def booked_cars(page=1):
     allBookedCars = RentedCar.query.paginate(page, per_page=5)
@@ -299,7 +340,6 @@ def booked_cars(page=1):
 
 @app.route("/booked_cars/me", methods=["GET"])
 def booked_cars_me():
-    print(request.headers)
     if not request.headers['Authorization']:
         raise BadRequest('You need to login to book', 300)
     authorization = request.headers['Authorization']

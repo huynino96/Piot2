@@ -48,7 +48,6 @@ class UserSchema(ModelSchema):
         model = User
 
 class RentedCar(db.Model):
-    __table_args__ = {'extend_existing': True}
     rentedId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     carId = db.Column(db.Integer, db.ForeignKey('car.carId'), nullable=False)
     car = relationship('Car')
@@ -61,6 +60,18 @@ class RentedCar(db.Model):
 class RentedCarSchema(ModelSchema):
     class Meta:
         model = RentedCar
+
+class Report(db.Model):
+    reportId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
+    carId = db.Column(db.Integer, db.ForeignKey('car.carId'), nullable=False)
+    car = relationship('Car')
+    userId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable=False)
+    user = relationship('User')
+    message = db.Column(db.String(100), nullable=False)
+
+class ReportSchema(ModelSchema):
+    class Meta:
+        model = Report
 
 class UserJson(Schema):
     userId = fields.Integer()
@@ -85,6 +96,11 @@ class RentedCarJson(Schema):
     status = fields.Str()
     rentedDate = fields.DateTime()
     returnedDate = fields.DateTime()
+
+class ReportJson(Schema):
+    user = fields.Nested(UserJson())
+    car = fields.Nested(CarJson())
+    message = fields.Str()
 
 db.create_all()
 
@@ -167,3 +183,5 @@ usersSchema = UserSchema(many=True)
 userSchema = UserSchema()
 rentedCarsSchema = RentedCarSchema(many=True)
 rentedCarSchema = RentedCarSchema()
+reportsSchema = ReportSchema(many=True)
+reportSchema = ReportSchema()

@@ -1,26 +1,30 @@
 import { useState, useEffect } from 'react';
 import MaterialTable from 'material-table';
+import { NotificationManager } from 'react-notifications';
 import api from '../../api';
 
 const Reports = () => {
     const [data, setData] = useState([]);
-    const [iserror, setIserror] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        api.get("/users")
-            .then(res => {
-                setData(res.data.data)
-            })
-            .catch(error=>{
-                setErrorMessage(["Cannot load user data"])
-                setIserror(true)
-            });
+        fetchData();
     }, []);
 
+    const fetchData = async () => {
+        try {
+            const { data } = await api.get('/reports');
+            const { reports } = data;
+            setData(reports);
+        } catch (e) {
+            NotificationManager.error('Can not get reports');
+        }
+    };
+
     const columns = [
-        {title: "User's Email", field: "email"},
-        {title: "Issue", field: "first_name"},
+        {title: 'User\'s Email', field: 'user.email'},
+        {title: 'Plate Number', field: 'car.plateNumber'},
+        {title: 'Make', field: 'car.make'},
+        {title: 'Message', field: 'message'},
     ];
 
     return (
