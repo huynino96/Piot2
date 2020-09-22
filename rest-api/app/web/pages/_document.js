@@ -19,7 +19,6 @@ class MyDocument extends Document {
                     <Main />
                     <NextScript />
                     <script src="https://d3js.org/d3.v5.min.js" />
-                    <script src="/js/graph.js" />
                     <script src="/js/manager.js" />
                 </body>
             </Html>
