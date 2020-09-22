@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import MaterialTable from 'material-table';
+import { useForm } from 'react-hook-form';
 import api from '../../api';
 import { NotificationManager } from 'react-notifications';
-import {useForm} from "react-hook-form";
 
 const Index = () => {
     const { handleSubmit, register, errors } = useForm();
@@ -19,7 +19,7 @@ const Index = () => {
         try {
             const { data } = await api.get('/cars');
             const { cars } = data;
-            setData(cars);
+            setData(cars.filter(item => !item.is_booked));
         } catch (e) {
             NotificationManager.error('Can not get list of cars');
         }
@@ -31,7 +31,9 @@ const Index = () => {
         try {
             const { carId } = rowData;
             await api.post(`/book_car/${carId}`, values);
+            setData(data.filter(item => item.carId !== carId));
             NotificationManager.success('Book successfully');
+            toggle();
         } catch (e) {
             NotificationManager.error('Can not book car');
         }
@@ -43,14 +45,14 @@ const Index = () => {
     };
 
     const columns = [
-        {title: "id", field: "id", hidden: true},
-        {title: "Plate Number", field: "plateNumber"},
-        {title: "Make", field: "make"},
-        {title: "Body Type", field: "bodyType"},
-        {title: "Color", field: "color"},
-        {title: "Seats", field: "seats"},
-        {title: "Location", field: "location"},
-        {title: "Cost Per Hour", field: "costPerHour"},
+        {title: 'carId', field: 'carId', hidden: true},
+        {title: 'Plate Number', field: 'plateNumber'},
+        {title: 'Make', field: 'make'},
+        {title: 'Body Type', field: 'bodyType'},
+        {title: 'Color', field: 'color'},
+        {title: 'Seats', field: 'seats'},
+        {title: 'Location', field: 'location'},
+        {title: 'Cost Per Hour', field: 'costPerHour'},
     ];
 
     const actions = [

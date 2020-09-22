@@ -1,5 +1,5 @@
 from app import app, basic_auth, db
-from app.models import Car, User, RentedCar, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema, rentedCarsSchema
+from app.models import Car, User, RentedCar, RentedCarJson, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema, rentedCarsSchema
 from flask import jsonify, request, render_template, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
@@ -290,8 +290,9 @@ def delete_user(id):
 @app.route("/booked_cars", methods=["GET"])
 def booked_cars(page=1):
     allBookedCars = RentedCar.query.paginate(page, per_page=5)
+    json = RentedCarJson(many=True)
     return jsonify({
-        "bookedCars": rentedCarsSchema.dump(allBookedCars.items),
+        "bookedCars": json.dump(allBookedCars.items),
         "has_next": allBookedCars.has_next,
         "has_prev": allBookedCars.has_prev
     })
@@ -306,9 +307,9 @@ def booked_cars_me():
     userName = accessToken['userName']
     user = User.query.filter_by(userName=userName).first()
     allBookedCars = RentedCar.query.filter_by(userId=user.userId).all()
-    print(allBookedCars[0])
+    json = RentedCarJson(many=True)
     return jsonify({
-        "bookedCars": allBookedCars,
+        "bookedCars": json.dump(allBookedCars),
     })
 
 @app.route("/book_car/<int:id>", methods=["POST"])
@@ -343,7 +344,7 @@ def book_car(id):
 
     return jsonify({"success": True, "id": rentedCar.rentedId})
 
-@app.route("/cancel_car/<int:id>", methods=["POST"])
+@app.route("/return_car/<int:id>", methods=["POST"])
 def cancel_car(id):
     if Car.query.filter(Car.carId == id).count() == 0:
         raise BadRequest("Car does not exist", 300)
@@ -354,11 +355,8 @@ def cancel_car(id):
     userName = accessToken['userName']
     user = User.query.filter_by(userName=userName).first()
 
-    # Create rented car object
-    duration = request.json["duration"]
-
     # Deleted rented car
-    RentedCar.query.filter(RentedCar.rentedId == id).delete()
+    RentedCar.query.filter(RentedCar.carId == id).delete()
 
     # Update car
     car = Car.query.get(id)
@@ -366,12 +364,11 @@ def cancel_car(id):
 
     # Try to save to db
     try:
-        db.session.add(rentedCar)
         db.session.commit()
     except Exception as e:
         return jsonify({"error": str(e)})
 
-    return jsonify({"success": True, "id": rentedCar.rentedId})
+    return jsonify({ "success": True })
 
 
 @app.route("/analytics/daily")

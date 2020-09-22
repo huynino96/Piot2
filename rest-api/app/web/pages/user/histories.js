@@ -20,16 +20,37 @@ const Histories = () => {
         }
     };
 
+    const handleReturn = async (event, rowData) => {
+        try {
+            const { car } = rowData;
+            const { carId } = car;
+            await api.post(`/return_car/${carId}`);
+            setData(data.filter(item => item.car.carId !== carId));
+            NotificationManager.success('Returned successfully');
+        } catch (e) {
+            NotificationManager.error('Can not return car');
+        }
+    };
+
     const columns = [
-        {title: "Rented Date", field: "rentedDate"},
-        {title: "Returned Date", field: "returnedDate"},
-        {title: "Plate Number", field: "plateNumber"},
-        {title: "Make", field: "make"},
-        {title: "Body Type", field: "body_type"},
-        {title: "Color", field: "color"},
-        {title: "Seats", field: "seats"},
-        {title: "Location", field: "location"},
-        {title: "Cost Per Hour", field: "cost_per_hour"},
+        {title: 'carId', field: 'car.carId', hidden: true},
+        {title: 'Rented Date', field: 'rentedDate'},
+        {title: 'Returned Date', field: 'returnedDate'},
+        {title: 'Plate Number', field: 'car.plateNumber'},
+        {title: 'Make', field: 'car.make'},
+        {title: 'Body Type', field: 'car.bodyType'},
+        {title: 'Color', field: 'car.color'},
+        {title: 'Seats', field: 'car.seats'},
+        {title: 'Location', field: 'car.location'},
+        {title: 'Cost Per Hour', field: 'car.costPerHour'},
+    ];
+
+    const actions = [
+        {
+            icon: 'keyboard_return',
+            tooltip: 'Return',
+            onClick: handleReturn,
+        }
     ];
 
     return (
@@ -37,6 +58,7 @@ const Histories = () => {
             title="Booked Car"
             columns={columns}
             data={data}
+            actions={actions}
         />
     );
 };

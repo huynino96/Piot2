@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 from marshmallow_sqlalchemy import ModelSchema
+from marshmallow import Schema, fields
 
 db.metadata.clear()
 
@@ -60,6 +61,30 @@ class RentedCar(db.Model):
 class RentedCarSchema(ModelSchema):
     class Meta:
         model = RentedCar
+
+class UserJson(Schema):
+    userId = fields.Integer()
+    firstName = fields.Str()
+    lastName = fields.Str()
+    email = fields.Str()
+    userName = fields.Str()
+
+class CarJson(Schema):
+    carId = fields.Integer()
+    plateNumber = fields.Str()
+    make = fields.Str()
+    bodyType = fields.Str()
+    color = fields.Str()
+    seats = fields.Integer()
+    location = fields.Str()
+    costPerHour = fields.Integer()
+
+class RentedCarJson(Schema):
+    user = fields.Nested(UserJson())
+    car = fields.Nested(CarJson())
+    status = fields.Str()
+    rentedDate = fields.DateTime()
+    returnedDate = fields.DateTime()
 
 db.create_all()
 
