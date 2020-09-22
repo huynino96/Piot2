@@ -38,15 +38,22 @@ All of them will be defined in User Model (in model.py)
 The admin and manager are created as "admin" and "manager" username so no one can create admin and manager anymore.
 
 **Admin:** 
--username: admin
--pass: 123456
+
+username: admin
+
+pass: 123456
 
 
 **Manager:**
--username: manager
--pass: 123456
+
+username: manager
+
+pass: 123456
+
 
 **User (more users can register to the system):**
--username: huy
--pass: 123456
+
+username: huy
+
+pass: 123456
 
