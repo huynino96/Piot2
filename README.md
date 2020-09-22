@@ -37,15 +37,15 @@ There are 3 types of users: Admin, Manager and User
 All of them will be defined in User Model (in model.py)
 The admin and manager are created as "admin" and "manager" username so no one can create admin and manager anymore.
 
-*** Admin: 
+**Admin:** 
 username: admin
 pass: 123456
 
-*** Manager:
+**Manager:**
 username: manager
 pass: 123456
 
-*** User (more users can register to the system):
+**User (more users can register to the system):**
 username: huy
 pass: 123456
 
