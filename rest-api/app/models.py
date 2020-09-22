@@ -1,6 +1,7 @@
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 import sqlalchemy as sa
+from sqlalchemy.orm import relationship
 from marshmallow_sqlalchemy import ModelSchema
 
 db.metadata.clear()
@@ -35,8 +36,7 @@ class Car(db.Model):
     seats = db.Column(db.Integer, nullable=False)
     location = db.Column(db.String(100), nullable=False)
     costPerHour = db.Column(db.Integer, nullable=False)
-
-db.create_all()
+    is_booked = db.Column(db.Boolean, default=False, nullable=False)
 
 class CarSchema(ModelSchema):
     class Meta:
@@ -50,11 +50,18 @@ class RentedCar(db.Model):
     __table_args__ = {'extend_existing': True}
     rentedId = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False)
     carId = db.Column(db.Integer, db.ForeignKey('car.carId'), nullable=False)
+    car = relationship('Car')
     userId = db.Column(db.Integer, db.ForeignKey('user.userId'), nullable=False)
+    user = relationship('User')
     status = db.Column(db.Enum('rented', 'returned'), nullable=True)
     rentedDate = db.Column(db.DateTime, nullable=False)
     returnedDate = db.Column(db.DateTime, nullable=True)
 
+class RentedCarSchema(ModelSchema):
+    class Meta:
+        model = RentedCar
+
+db.create_all()
 
 # This function will generate data for creating graph about rented and returned cars
 def getDailyAnalytics():
@@ -133,3 +140,5 @@ carsSchema = CarSchema(many=True)
 carSchema = CarSchema()
 usersSchema = UserSchema(many=True)
 userSchema = UserSchema()
+rentedCarsSchema = RentedCarSchema(many=True)
+rentedCarSchema = RentedCarSchema()

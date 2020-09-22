@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input } from 'reactstrap';
 import MaterialTable from 'material-table';
 import api from '../../api';
 import { NotificationManager } from 'react-notifications';
+import {useForm} from "react-hook-form";
 
 const Index = () => {
+    const { handleSubmit, register, errors } = useForm();
+    const [modal, setModal] = useState(false);
     const [data, setData] = useState([]);
+    const [rowData, setRowData] = useState({});
 
     useEffect(() => {
         fetchData();
@@ -20,8 +25,21 @@ const Index = () => {
         }
     };
 
-    const handleBook = (event, rowData) => {
+    const toggle = () => setModal(!modal);
 
+    const onSubmit = async values => {
+        try {
+            const { carId } = rowData;
+            await api.post(`/book_car/${carId}`, values);
+            NotificationManager.success('Book successfully');
+        } catch (e) {
+            NotificationManager.error('Can not book car');
+        }
+    };
+
+    const handleBook = (event, rowData) => {
+        toggle();
+        setRowData(rowData);
     };
 
     const columns = [
@@ -44,13 +62,46 @@ const Index = () => {
     ];
 
     return (
-        <MaterialTable
-            title="Available Car"
-            columns={columns}
-            data={data}
-            actions={actions}
-        />
+        <>
+            <MaterialTable
+                title="Available Car"
+                columns={columns}
+                data={data}
+                actions={actions}
+            />
+            <Modal isOpen={modal} toggle={toggle}>
+                <Form onSubmit={handleSubmit(onSubmit)}>
+                    <ModalHeader toggle={toggle}>Book Car</ModalHeader>
+                    <ModalBody>
+                        <FormGroup>
+                            <Label for="rentedDate">Rented Date</Label>
+                            <Input
+                                type="text"
+                                name="rentedDate"
+                                placeholder="Enter rented date"
+                                innerRef={register({ required: true })}
+                            />
+                            {errors.rentedDate && errors.rentedDate.message}
+                        </FormGroup>
+                        <FormGroup>
+                            <Label for="returnedDate">Returned Date</Label>
+                            <Input
+                                type="text"
+                                name="returnedDate"
+                                placeholder="Enter returned date"
+                                innerRef={register({ required: true })}
+                            />
+                            {errors.returnedDate && errors.returnedDate.message}
+                        </FormGroup>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" type="submit">Submit</Button>{' '}
+                        <Button color="secondary" onClick={toggle}>Cancel</Button>
+                    </ModalFooter>
+                </Form>
+            </Modal>
+        </>
     );
-}
+};
 
 export default Index;

@@ -6,9 +6,9 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use(function handler(config) {
-    const token = typeof window !== 'undefined' ? window.localStorage.getItem('token') : null;
+    const token = typeof window !== 'undefined' ? window.localStorage.getItem('access_token') : null;
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = token;
     }
     return config;
 });

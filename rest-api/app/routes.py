@@ -1,5 +1,5 @@
 from app import app, basic_auth, db
-from app.models import Car, User, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema
+from app.models import Car, User, RentedCar, getMonthlyAnalytics, getDailyAnalytics, carsSchema, usersSchema, rentedCarsSchema
 from flask import jsonify, request, render_template, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 import jwt
@@ -50,7 +50,7 @@ def login():
         raise BadRequest("Password is not matched")
 
     # Put user information into jwt
-    access_token = jwt.encode({'userName': userName}, 'secret')
+    access_token = jwt.encode({ 'userName': userName }, 'secret')
 
     # Return jwt
     return jsonify({ "success": True, "access_token": access_token.decode('utf-8') })
@@ -286,6 +286,92 @@ def delete_user(id):
         except Exception as e:
             return jsonify({"error": str(e)})
         return jsonify({"success": True, "id": id})
+
+@app.route("/booked_cars", methods=["GET"])
+def booked_cars(page=1):
+    allBookedCars = RentedCar.query.paginate(page, per_page=5)
+    return jsonify({
+        "bookedCars": rentedCarsSchema.dump(allBookedCars.items),
+        "has_next": allBookedCars.has_next,
+        "has_prev": allBookedCars.has_prev
+    })
+
+@app.route("/booked_cars/me", methods=["GET"])
+def booked_cars_me():
+    print(request.headers)
+    if not request.headers['Authorization']:
+        raise BadRequest('You need to login to book', 300)
+    authorization = request.headers['Authorization']
+    accessToken = jwt.decode(authorization, 'secret')
+    userName = accessToken['userName']
+    user = User.query.filter_by(userName=userName).first()
+    allBookedCars = RentedCar.query.filter_by(userId=user.userId).all()
+    print(allBookedCars[0])
+    return jsonify({
+        "bookedCars": allBookedCars,
+    })
+
+@app.route("/book_car/<int:id>", methods=["POST"])
+def book_car(id):
+    if Car.query.filter(Car.carId == id).count() == 0:
+        raise BadRequest("Car does not exist", 300)
+    if not request.headers['Authorization']:
+        raise BadRequest('You need to login to book', 300)
+    authorization = request.headers['Authorization']
+    accessToken = jwt.decode(authorization, 'secret')
+    userName = accessToken['userName']
+    user = User.query.filter_by(userName=userName).first()
+
+    # Create rented car object
+    status = "rented"
+    rentedDate = request.json["rentedDate"]
+    returnedDate = request.json["returnedDate"]
+
+    # Create rented car
+    rentedCar = RentedCar(carId=id, userId=user.userId, status=status, rentedDate=rentedDate, returnedDate=returnedDate)
+
+    # Update car
+    car = Car.query.get(id)
+    car.is_booked = True
+
+    # Try to save to db
+    try:
+        db.session.add(rentedCar)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    return jsonify({"success": True, "id": rentedCar.rentedId})
+
+@app.route("/cancel_car/<int:id>", methods=["POST"])
+def cancel_car(id):
+    if Car.query.filter(Car.carId == id).count() == 0:
+        raise BadRequest("Car does not exist", 300)
+    if not request.headers['Authorization']:
+        raise BadRequest('You need to login to book', 300)
+    authorization = request.headers['Authorization']
+    accessToken = jwt.decode(authorization, 'secret')
+    userName = accessToken['userName']
+    user = User.query.filter_by(userName=userName).first()
+
+    # Create rented car object
+    duration = request.json["duration"]
+
+    # Deleted rented car
+    RentedCar.query.filter(RentedCar.rentedId == id).delete()
+
+    # Update car
+    car = Car.query.get(id)
+    car.is_booked = False
+
+    # Try to save to db
+    try:
+        db.session.add(rentedCar)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": str(e)})
+
+    return jsonify({"success": True, "id": rentedCar.rentedId})
 
 
 @app.route("/analytics/daily")
